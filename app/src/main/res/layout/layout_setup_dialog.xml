@@ -40,7 +40,7 @@
         android:textColor="@android:color/darker_gray"
         app:layout_constraintTop_toBottomOf="@id/choices"
         app:layout_constraintBottom_toTopOf="@id/stepsLayout"
-        android:text="Number of steps. Recommended values are integers between 3 to 10."
+        android:text="Number of steps. Recommended values are integers between 10 to 50."
         android:id="@+id/stepsInfo"/>
 
     <LinearLayout
@@ -72,7 +72,7 @@
         android:textColor="@android:color/darker_gray"
         app:layout_constraintTop_toBottomOf="@id/stepsLayout"
         app:layout_constraintBottom_toTopOf="@id/stepSizeLayout"
-        android:text="Step Size. Recommended values are decimals between 0.001 and 1."
+        android:text="Step Size. Recommended values are decimals between 0.01 and 1."
         android:id="@+id/stepSizeInfo"/>
 
     <LinearLayout

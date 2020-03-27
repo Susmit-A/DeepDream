@@ -53,7 +53,7 @@ public abstract class Model {
             "https://github.com/Susmit-A/DeepDreamWeights/blob/master/VGG19/VGG_full.h5?raw=true"
         );
         modelMap.put(Types.InceptionV3,
-            "https://github.com/Susmit-A/DeepDreamWeights/raw/master/InceptionV3/InceptionV3_full.h5"
+            "https://github.com/Susmit-A/DeepDreamWeights/raw/master/InceptionV3/InceptionV3.h5"
         );
         modelMap.put(Types.ResNet50,
             "https://github.com/Susmit-A/DeepDreamWeights/raw/master/ResNet50/ResNetV2_full.h5"

@@ -23,7 +23,7 @@
         <RadioButton
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="InceptionV3"
+            android:text="InceptionV3 (Recommended)"
             android:id="@+id/inceptionv3choice"/>
         <RadioButton
             android:layout_width="wrap_content"

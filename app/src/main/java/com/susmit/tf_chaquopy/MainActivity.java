@@ -52,8 +52,11 @@ import com.susmit.tf_chaquopy.models.VGG19;
 import org.opencv.android.OpenCVLoader;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.ref.WeakReference;
 
 public class MainActivity extends Activity {
 
@@ -71,7 +74,7 @@ public class MainActivity extends Activity {
 
     static final int CAMERA_PERMISSION_CODE = 80;
     static final int READ_PERMISSION_CODE = 88;
-    static final int WRITE_PERMISSION_CODE = 89;
+    static final int FETCH_IMAGE_CODE = 89;
 
     FloatingActionButton cameraButton;
     CameraKitView cameraView;
@@ -91,11 +94,10 @@ public class MainActivity extends Activity {
 
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
         {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, READ_PERMISSION_CODE);
-        }
-        else if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
-        {
-            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, WRITE_PERMISSION_CODE);
+            requestPermissions(new String[]{
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+            }, READ_PERMISSION_CODE);
         }
 
         Python.start(new AndroidPlatform(MainActivity.this));
@@ -111,7 +113,7 @@ public class MainActivity extends Activity {
                     public void onImage(CameraKitView cameraKitView, byte[] bytes) {
                         MediaActionSound sound = new MediaActionSound();
                         sound.play(MediaActionSound.SHUTTER_CLICK);
-                        new DreamTaskRaw().execute(bytes);
+                        new DreamTaskRaw(MainActivity.this).execute(bytes);
                     }
                 });
             }
@@ -179,7 +181,17 @@ public class MainActivity extends Activity {
                     setupDialog.show();
                     return true;
                 }
-                Toast.makeText(MainActivity.this, "This is a placeholder", Toast.LENGTH_SHORT).show();
+                else if(item.getItemId() == R.id.app_bar_gallery) {
+                    Intent intent = new Intent(Intent.ACTION_PICK);
+                    intent.setDataAndType( MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/*");
+                    intent.putExtra("return-data", true);
+                    String[] mimeTypes = {"image/png", "image/jpeg", "image/webp"};
+                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                    startActivityForResult(intent, FETCH_IMAGE_CODE);
+                }
+                else {
+                    Toast.makeText(MainActivity.this, "This is a placeholder", Toast.LENGTH_SHORT).show();
+                }
                 return false;
             }
         });
@@ -196,6 +208,10 @@ public class MainActivity extends Activity {
                 pd.dismiss();
             }
         });
+    }
+
+    Model getModel() {
+        return model;
     }
 
     @Override
@@ -233,12 +249,25 @@ public class MainActivity extends Activity {
         if (requestCode == CAMERA_PERMISSION_CODE) {
             cameraView.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
-        if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
-
-        }
-        else {
+        if (!(grantResults[0] == PackageManager.PERMISSION_GRANTED)){
             Toast.makeText(MainActivity.this, "Permission denied, exiting", Toast.LENGTH_LONG).show();
             finish();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == FETCH_IMAGE_CODE && resultCode == RESULT_OK) {
+            Uri imageUri = data.getData();
+            Toast.makeText(MainActivity.this, imageUri.toString(), Toast.LENGTH_SHORT).show();
+            try {
+                InputStream istream =   getContentResolver().openInputStream(imageUri);
+                byte[] bytes = new byte[istream.available()];
+                istream.read(bytes, 0, bytes.length);
+                new DreamTaskRaw(MainActivity.this).execute(bytes);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -248,20 +277,26 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    public class DreamTaskRaw extends AsyncTask<byte[], Void, Void> {
+    public static class DreamTaskRaw extends AsyncTask<byte[], Void, Void> {
         ProgressDialog progressDialog;
+        WeakReference<Activity> activity;
+
+        public DreamTaskRaw(Activity activity) {
+            this.activity = new WeakReference<>(activity);
+        }
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressDialog = new ProgressDialog(MainActivity.this);
+            progressDialog = new ProgressDialog(activity.get());
             progressDialog.setMessage("Processing...");
         }
 
         @Override
         protected Void doInBackground(byte[]... byteArrays) {
-            byte[] outputArray = model.dream(byteArrays[0], Globals.steps, Globals.step_size);
+            byte[] outputArray = ((MainActivity)activity.get()).model.dream(byteArrays[0], Globals.steps, Globals.step_size);
 
-            runOnUiThread(new Runnable() {
+            activity.get().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     progressDialog.show();
@@ -269,7 +304,7 @@ public class MainActivity extends Activity {
             });
             Bitmap output = BitmapFactory.decodeByteArray(outputArray, 0, outputArray.length);
 
-            try (FileOutputStream out = new FileOutputStream(new File(getDataDir(), "tmp.png"))) {
+            try (FileOutputStream out = new FileOutputStream(new File(activity.get().getDataDir(), "tmp.png"))) {
                 output.compress(Bitmap.CompressFormat.PNG, 100, out);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -280,9 +315,9 @@ public class MainActivity extends Activity {
 
         @Override
         protected void onPostExecute(Void avoid) {
-            Intent i = new Intent(MainActivity.this, ImageActivity.class);
+            Intent i = new Intent(activity.get(), ImageActivity.class);
             progressDialog.dismiss();
-            startActivity(i);
+            activity.get().startActivity(i);
         }
     }
 }

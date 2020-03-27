@@ -12,7 +12,8 @@ from java.lang import Runnable
 from com.susmit.tf_chaquopy import DreamDialog
 
 dialog = None
-def dream(model, context, array, steps, step_size):
+
+def dream(model, context, array, steps, step_size, down_factor=1):
     iterations = steps
     Log.d("Steps", str(steps))
     Log.d("Step Size", str(step_size))
@@ -47,20 +48,24 @@ def dream(model, context, array, steps, step_size):
 
     context.runOnUiThread(StartRunnable())
 
-    # array = Image.open(io.BytesIO(bytes(array)))
-    # array = np.array(array)
     stream = io.BytesIO(bytes(array))
     array = cv2.imdecode(np.fromstring(stream.read(), np.uint8), cv2.IMREAD_COLOR)
     array = cv2.cvtColor(array, cv2.COLOR_BGR2RGB)
     Log.d("Size", str(array.shape))
-    dim0 = array.shape[0]
-    dim1 = array.shape[1]
-    array = cv2.resize(array, (dim1//8, dim0//8))
-    Log.d("Size", str(array.shape))
+    size = (array.shape[1], array.shape[0])
     array = ((array / 127.5) - 1.0).astype(np.float32)
-    array = np.expand_dims(array, axis=0)
+    multiplier = sorted(np.random.uniform(low=0.5, high=1.5, size=iterations))
     for i in range(iterations):
         Log.d("Iteration", str(i))
+
+        array = cv2.resize(
+            array,
+            (
+                int((256 * multiplier[i]) // down_factor),
+                int((256 * multiplier[i]) // down_factor),
+            )
+        )
+        array = np.expand_dims(array, axis=0)
         array = tf.convert_to_tensor(array)
 
         with tf.GradientTape() as tape:
@@ -75,12 +80,12 @@ def dream(model, context, array, steps, step_size):
 
         array = array + grads * step_size
         array = tf.clip_by_value(array, -1, 1)
-        context.runOnUiThread(UpdateRunnable(i + 1))
+        array = array.numpy()[0]
+        context.runOnUiThread(UpdateRunnable((i + 1)))
 
-    array = array.numpy()[0]
+    array = cv2.resize(array, size)
     array = ((1.0 + array) * 127.5).astype(np.uint8)
     array = cv2.cvtColor(array, cv2.COLOR_RGB2BGR)
-    array = cv2.resize(array, (dim1, dim0))
     _, array = cv2.imencode('.png', array)
     context.runOnUiThread(EndRunnable())
     return array.tobytes()

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <com.camerakit.CameraKitView
+        android:id="@+id/cameraView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:camera_facing="back"
+        app:camera_permissions="camera"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bottom_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            app:backgroundTint="@android:color/transparent"
+            app:fabAlignmentMode="center">
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/background_transparent"
+                android:translationX="-8dp"
+                app:itemHorizontalTranslationEnabled="false"
+                app:itemIconSize="64dp"
+                app:itemIconTint="@android:color/white"
+                app:itemRippleColor="@color/colorPrimaryDark"
+                app:labelVisibilityMode="unlabeled"
+                app:menu="@menu/bottom_menu" />
+        </com.google.android.material.bottomappbar.BottomAppBar>
+
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_height="64dp"
+            android:layout_width="64dp"
+            app:fabCustomSize="64dp"
+            android:layout_margin="24dp"
+            android:id="@+id/camera"
+            android:background="@color/colorAccent"
+            app:backgroundTint="@color/colorAccent"
+            android:src="@drawable/camera_icon"
+            app:layout_anchor="@id/bottom_bar"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

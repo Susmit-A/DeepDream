@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/app_bar_fav"
+        android:title="Test1"
+        android:icon="@drawable/ic_launcher_foreground"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/app_bar_2"
+        android:title="Test2"
+        android:icon="@drawable/ic_launcher_foreground"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/dummy"
+        android:title="" />
+
+    <item
+        android:id="@+id/app_bar_3"
+        android:title="Test3"
+        android:icon="@drawable/ic_launcher_foreground"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/app_bar_4"
+        android:title="Test4"
+        android:icon="@drawable/ic_launcher_foreground"
+        app:showAsAction="ifRoom"/>
+
+</menu>

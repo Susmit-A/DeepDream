@@ -28,6 +28,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Size;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.TextureView;
@@ -40,6 +41,7 @@ import android.widget.Toast;
 import com.camerakit.CameraKitView;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.susmit.tf_chaquopy.models.InceptionV3;
 import com.susmit.tf_chaquopy.models.Model;
@@ -48,15 +50,10 @@ import com.susmit.tf_chaquopy.models.VGG16;
 import com.susmit.tf_chaquopy.models.VGG19;
 
 import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
-import org.opencv.core.Mat;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class MainActivity extends Activity {
 
@@ -78,6 +75,7 @@ public class MainActivity extends Activity {
 
     FloatingActionButton cameraButton;
     CameraKitView cameraView;
+    BottomNavigationView optionsMenu;
 
     boolean setupFinished = false;
 
@@ -108,11 +106,11 @@ public class MainActivity extends Activity {
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MediaActionSound sound = new MediaActionSound();
-                sound.play(MediaActionSound.SHUTTER_CLICK);
                 cameraView.captureImage(new CameraKitView.ImageCallback() {
                     @Override
                     public void onImage(CameraKitView cameraKitView, byte[] bytes) {
+                        MediaActionSound sound = new MediaActionSound();
+                        sound.play(MediaActionSound.SHUTTER_CLICK);
                         new DreamTaskRaw().execute(bytes);
                     }
                 });
@@ -125,48 +123,64 @@ public class MainActivity extends Activity {
         setupDialog.setSetupFinishedListener(new SetupDialog.SetupFinishedListener() {
             @Override
             public void onSetupFinished() {
-                switch(Globals.modelType){
-                    case VGG16:
-                        model = new VGG16(MainActivity.this);
-                        break;
+                setupDialog.dismiss();
+                if(model==null || model.getType() != Globals.modelType) {
+                    switch(Globals.modelType){
+                        case VGG16:
+                            model = new VGG16(MainActivity.this);
+                            break;
 
-                    case VGG19:
-                        model = new VGG19(MainActivity.this);
-                        break;
+                        case VGG19:
+                            model = new VGG19(MainActivity.this);
+                            break;
 
-                    case InceptionV3:
-                        model = new InceptionV3(MainActivity.this);
-                        break;
+                        case InceptionV3:
+                            model = new InceptionV3(MainActivity.this);
+                            break;
 
-                    case ResNet50:
-                        model = new ResNet50(MainActivity.this);
-                        break;
-                }
-                if(!model.exists()) {
-                    model.setOnDownloadCompleteListener(new Model.OnDownloadCompleteListener() {
-                        @Override
-                        public void onDownloadComplete(Model model) {
+                        case ResNet50:
+                            model = new ResNet50(MainActivity.this);
+                            break;
+                    }
+                    if(!model.exists()) {
+                        model.setOnDownloadCompleteListener(new Model.OnDownloadCompleteListener() {
+                            @Override
+                            public void onDownloadComplete(Model model) {
 
-                        }
+                            }
 
-                        @Override
-                        public void runOnUiThread(Model model) {
-                            loadModel(model);
-                        }
+                            @Override
+                            public void runOnUiThread(Model model) {
+                                loadModel(model);
+                            }
 
-                        @Override
-                        public void onDownCancelled(Model model) {
+                            @Override
+                            public void onDownCancelled(Model model) {
 
-                        }
-                    });
-                    setupDialog.dismiss();
-                    model.downloadAsync();
-                }
-                else {
-                    setupDialog.dismiss();
-                    loadModel(model);
+                            }
+                        });
+//                        setupDialog.dismiss();
+                        model.downloadAsync();
+                    }
+                    else {
+//                        setupDialog.dismiss();
+                        loadModel(model);
+                    }
                 }
                 setupFinished = true;
+            }
+        });
+
+        optionsMenu = findViewById(R.id.optionsMenu);
+        optionsMenu.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                if(item.getItemId() == R.id.app_bar_settings) {
+                    setupDialog.show();
+                    return true;
+                }
+                Toast.makeText(MainActivity.this, "This is a placeholder", Toast.LENGTH_SHORT).show();
+                return false;
             }
         });
     }

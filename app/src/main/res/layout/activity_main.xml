@@ -31,12 +31,13 @@
             app:fabAlignmentMode="center">
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/optionsMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/background_transparent"
                 android:translationX="-8dp"
                 app:itemHorizontalTranslationEnabled="false"
-                app:itemIconSize="64dp"
+                app:itemIconSize="32dp"
                 app:itemIconTint="@android:color/white"
                 app:itemRippleColor="@color/colorPrimaryDark"
                 app:labelVisibilityMode="unlabeled"

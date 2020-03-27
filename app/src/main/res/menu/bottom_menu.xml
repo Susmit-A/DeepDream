@@ -20,10 +20,10 @@
         android:title="" />
 
     <item
-        android:id="@+id/app_bar_3"
-        android:title="Test3"
-        android:icon="@drawable/ic_launcher_foreground"
-        app:showAsAction="ifRoom"/>
+        android:id="@+id/app_bar_settings"
+        android:title="Settings"
+        android:icon="@drawable/settings_icon"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/app_bar_4"

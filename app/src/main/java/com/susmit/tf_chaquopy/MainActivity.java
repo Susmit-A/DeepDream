@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Camera;
@@ -83,6 +84,11 @@ public class MainActivity extends Activity {
     boolean setupFinished = false;
 
     @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -100,7 +106,8 @@ public class MainActivity extends Activity {
             }, READ_PERMISSION_CODE);
         }
 
-        Python.start(new AndroidPlatform(MainActivity.this));
+        if(!Python.isStarted())
+            Python.start(new AndroidPlatform(MainActivity.this));
         py = Python.getInstance();
 
         cameraView = findViewById(R.id.cameraView);
@@ -108,6 +115,10 @@ public class MainActivity extends Activity {
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if(Globals.step_size <= 0 || Globals.steps <= 0) {
+                    Toast.makeText(MainActivity.this, "Enter valid values for Steps and Step Size", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 cameraView.captureImage(new CameraKitView.ImageCallback() {
                     @Override
                     public void onImage(CameraKitView cameraKitView, byte[] bytes) {
@@ -121,7 +132,46 @@ public class MainActivity extends Activity {
 
         setupDialog = new SetupDialog(MainActivity.this);
         setupDialog.setCanceledOnTouchOutside(false);
+        setupDialog.setOnDownloadClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setupDialog.dismiss();
+                switch(Globals.modelType){
+                    case VGG16:
+                        model = new VGG16(MainActivity.this);
+                        break;
 
+                    case VGG19:
+                        model = new VGG19(MainActivity.this);
+                        break;
+
+                    case InceptionV3:
+                        model = new InceptionV3(MainActivity.this);
+                        break;
+
+                    case ResNet50:
+                        model = new ResNet50(MainActivity.this);
+                        break;
+                }
+                model.setOnDownloadCompleteListener(new Model.OnDownloadCompleteListener() {
+                    @Override
+                    public void onDownloadComplete(Model model) {
+
+                    }
+
+                    @Override
+                    public void runOnUiThread(Model model) {
+                        loadModel(model);
+                    }
+
+                    @Override
+                    public void onDownCancelled(Model model) {
+
+                    }
+                });
+                model.downloadAsync();
+            }
+        });
         setupDialog.setSetupFinishedListener(new SetupDialog.SetupFinishedListener() {
             @Override
             public void onSetupFinished() {
@@ -161,11 +211,9 @@ public class MainActivity extends Activity {
 
                             }
                         });
-//                        setupDialog.dismiss();
                         model.downloadAsync();
                     }
                     else {
-//                        setupDialog.dismiss();
                         loadModel(model);
                     }
                 }
@@ -288,6 +336,11 @@ public class MainActivity extends Activity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            if(Globals.step_size <= 0 || Globals.steps <= 0) {
+                Toast.makeText(activity.get(), "Enter valid values for Steps and Step Size", Toast.LENGTH_LONG).show();
+                cancel(true);
+                return;
+            }
             progressDialog = new ProgressDialog(activity.get());
             progressDialog.setMessage("Processing...");
         }

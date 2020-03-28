@@ -13,7 +13,7 @@ from com.susmit.tf_chaquopy import DreamDialog
 
 dialog = None
 
-def dream(model, context, array, steps, step_size, down_factor=1):
+def dream(model, context, array, steps, step_size):
     iterations = steps
     Log.d("Steps", str(steps))
     Log.d("Step Size", str(step_size))
@@ -54,19 +54,18 @@ def dream(model, context, array, steps, step_size, down_factor=1):
     Log.d("Size", str(array.shape))
     size = (array.shape[1], array.shape[0])
     array = ((array / 127.5) - 1.0).astype(np.float32)
-    multiplier = sorted(np.random.uniform(low=0.5, high=1.5, size=iterations))
+    array = np.expand_dims(array, axis=0)
     for i in range(iterations):
         Log.d("Iteration", str(i))
-
-        array = cv2.resize(
-            array,
-            (
-                int((256 * multiplier[i]) // down_factor),
-                int((256 * multiplier[i]) // down_factor),
+        if i % 5 == 0:
+            multiplier = np.random.uniform(0.5, 1.5)
+            array = tf.image.resize(
+                array,
+                (
+                    int((256 * multiplier)),
+                    int((256 * multiplier)),
+                )
             )
-        )
-        array = np.expand_dims(array, axis=0)
-        array = tf.convert_to_tensor(array)
 
         with tf.GradientTape() as tape:
             tape.watch(array)
@@ -80,9 +79,9 @@ def dream(model, context, array, steps, step_size, down_factor=1):
 
         array = array + grads * step_size
         array = tf.clip_by_value(array, -1, 1)
-        array = array.numpy()[0]
         context.runOnUiThread(UpdateRunnable((i + 1)))
 
+    array = array.numpy()[0]
     array = cv2.resize(array, size)
     array = ((1.0 + array) * 127.5).astype(np.uint8)
     array = cv2.cvtColor(array, cv2.COLOR_RGB2BGR)

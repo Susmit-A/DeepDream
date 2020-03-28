@@ -1,107 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:padding="20dp">
-
-    <RadioGroup
+    android:layout_width="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        android:id="@+id/choices">
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="VGG16"
-            android:id="@+id/vgg16choice"/>
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="VGG19"
-            android:id="@+id/vgg19choice"/>
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="InceptionV3 (Recommended)"
-            android:id="@+id/inceptionv3choice"/>
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ResNet50"
-            android:id="@+id/resnet50choice"/>
-    </RadioGroup>
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:padding="20dp">
 
-    <TextView
-        android:paddingTop="16dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textColor="@android:color/darker_gray"
-        app:layout_constraintTop_toBottomOf="@id/choices"
-        app:layout_constraintBottom_toTopOf="@id/stepsLayout"
-        android:text="Number of steps. Recommended values are integers between 10 to 50."
-        android:id="@+id/stepsInfo"/>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:weightSum="3"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/stepsInfo"
-        android:id="@+id/stepsLayout">
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/choices">
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="VGG16"
+                android:id="@+id/vgg16choice"/>
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="VGG19"
+                android:id="@+id/vgg19choice"/>
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="InceptionV3 (Recommended)"
+                android:id="@+id/inceptionv3choice"/>
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ResNet50"
+                android:id="@+id/resnet50choice"/>
+        </RadioGroup>
 
         <TextView
-            android:layout_width="0dp"
+            android:paddingTop="16dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Steps"
-            android:layout_weight="1"/>
-        <EditText
-            android:layout_width="0dp"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            app:layout_constraintTop_toBottomOf="@id/choices"
+            app:layout_constraintBottom_toTopOf="@id/stepsLayout"
+            android:text="Number of steps. Recommended values are integers between 10 to 50."
+            android:id="@+id/stepsInfo"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:inputType="numberSigned"
-            android:id="@+id/steps"/>
-    </LinearLayout>
+            android:weightSum="3"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/stepsInfo"
+            android:id="@+id/stepsLayout">
 
-    <TextView
-        android:paddingTop="24dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="14sp"
-        android:textColor="@android:color/darker_gray"
-        app:layout_constraintTop_toBottomOf="@id/stepsLayout"
-        app:layout_constraintBottom_toTopOf="@id/stepSizeLayout"
-        android:text="Step Size. Recommended values are decimals between 0.01 and 1."
-        android:id="@+id/stepSizeInfo"/>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Steps"
+                android:layout_weight="1"/>
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:inputType="numberSigned"
+                android:id="@+id/steps"/>
+        </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:weightSum="3"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/stepSizeInfo"
-        android:id="@+id/stepSizeLayout">
         <TextView
-            android:layout_width="0dp"
+            android:paddingTop="24dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Step Size"
-            android:layout_weight="1"/>
-        <EditText
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="2"
-            android:inputType="numberDecimal"
-            android:id="@+id/stepSize"/>
-    </LinearLayout>
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            app:layout_constraintTop_toBottomOf="@id/stepsLayout"
+            app:layout_constraintBottom_toTopOf="@id/stepSizeLayout"
+            android:text="Step Size. Recommended values are decimals between 0.01 and 1."
+            android:id="@+id/stepSizeInfo"/>
 
-    <Button
-        app:layout_constraintTop_toBottomOf="@id/stepSizeLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="OK"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:id="@+id/positiveButton"
-        android:background="@color/colorPrimary"/>
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="3"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/stepSizeInfo"
+            android:id="@+id/stepSizeLayout">
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Step Size"
+                android:layout_weight="1"/>
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:inputType="numberDecimal"
+                android:id="@+id/stepSize"/>
+        </LinearLayout>
+
+        <Button
+            app:layout_constraintTop_toBottomOf="@id/stepSizeLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="OK"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:id="@+id/positiveButton"
+            android:background="@color/colorPrimary"/>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="parent"
+            android:text="Download"
+            app:layout_constraintTop_toBottomOf="@id/stepSizeLayout"
+            android:background="@android:color/transparent"
+            android:textColor="@color/colorPrimary"
+            android:id="@+id/modelDownloadBtn"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

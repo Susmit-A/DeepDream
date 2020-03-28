@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 
 public abstract class Model {
@@ -47,21 +48,29 @@ public abstract class Model {
         this.activity = activity;
         modelMap = new HashMap<>();
         modelMap.put(Types.VGG16,
-            "https://github.com/Susmit-A/DeepDreamWeights/blob/master/VGG16/VGG_full.h5?raw=true"
+            "https://github.com/Susmit-A/DeepDreamWeights/blob/master/VGG16/VGG16.h5?raw=true"
         );
         modelMap.put(Types.VGG19,
-            "https://github.com/Susmit-A/DeepDreamWeights/blob/master/VGG19/VGG_full.h5?raw=true"
+            "https://github.com/Susmit-A/DeepDreamWeights/blob/master/VGG19/VGG19.h5?raw=true"
         );
         modelMap.put(Types.InceptionV3,
-            "https://github.com/Susmit-A/DeepDreamWeights/raw/master/InceptionV3/InceptionV3.h5"
+            "https://github.com/Susmit-A/DeepDreamWeights/raw/master/InceptionV3/InceptionV3.h5?raw=true"
         );
         modelMap.put(Types.ResNet50,
-            "https://github.com/Susmit-A/DeepDreamWeights/raw/master/ResNet50/ResNetV2_full.h5"
+            "https://github.com/Susmit-A/DeepDreamWeights/raw/master/ResNet50/ResNet50.h5?raw=true"
         );
     }
 
     public void setOnDownloadCompleteListener(OnDownloadCompleteListener listener) {
         onDownloadCompleteListener = listener;
+    }
+
+    public static String getHumanReadableSize(long size) {
+        if (size <= 0)
+            return "0";
+        final String[] units = new String[] { "B", "KB", "MB", "GB", "TB" };
+        int digitGroups = (int) (Math.log10(size) / Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size / Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
     public void downloadAsync(final Types type) {
@@ -113,7 +122,9 @@ public abstract class Model {
                         activity.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                dialog.setText("Downloading " + type.toString() + "\n\n" + dl + "/" + contentLength + " bytes");
+                                dialog.setText("Downloading " + type.toString() + "\n\n" +
+                                        getHumanReadableSize(dl) + "/" +
+                                        getHumanReadableSize(contentLength));
                                 dialog.updateProgress(dl);
                             }
                         });

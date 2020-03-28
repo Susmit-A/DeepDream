@@ -24,10 +24,12 @@ public class SetupDialog extends Dialog {
     EditText step_size;
     RadioGroup choices;
     Button positiveButton;
+    Button downloadButton;
 
     Context context;
 
     SetupFinishedListener listener;
+    View.OnClickListener downloadClickListener;
 
     protected SetupDialog(@NonNull Context context) {
         super(context);
@@ -53,6 +55,7 @@ public class SetupDialog extends Dialog {
         steps = findViewById(R.id.steps);
         step_size = findViewById(R.id.stepSize);
         positiveButton = findViewById(R.id.positiveButton);
+        downloadButton = findViewById(R.id.modelDownloadBtn);
 
         positiveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,12 +87,47 @@ public class SetupDialog extends Dialog {
                 }
                 Globals.steps = Integer.valueOf(steps.getText().toString());
                 Globals.step_size = Float.valueOf(step_size.getText().toString());
+                if(Globals.steps <= 0 || Globals.step_size <= 0) {
+                    Toast.makeText(context, "Enter valid values for Steps and Step Size", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 listener.onSetupFinished();
+            }
+        });
+        downloadButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switch(choices.getCheckedRadioButtonId()) {
+                    case -1:
+                        Toast.makeText(context, "Select a model", Toast.LENGTH_SHORT).show();
+                        return;
+
+                    case R.id.vgg16choice:
+                        Globals.modelType = Model.Types.VGG16;
+                        break;
+
+                    case R.id.vgg19choice:
+                        Globals.modelType = Model.Types.VGG19;
+                        break;
+
+                    case R.id.inceptionv3choice:
+                        Globals.modelType = Model.Types.InceptionV3;
+                        break;
+
+                    case R.id.resnet50choice:
+                        Globals.modelType = Model.Types.ResNet50;
+                        break;
+                }
+                downloadClickListener.onClick(v);
             }
         });
     }
 
     public void setSetupFinishedListener(SetupFinishedListener listener) {
         this.listener = listener;
+    }
+
+    public void setOnDownloadClickListener(final View.OnClickListener listener) {
+        downloadClickListener = listener;
     }
 }
